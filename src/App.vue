@@ -1,14 +1,3 @@
-<script setup>
-import { onMounted } from 'vue';
-import { useDefaultStore } from './stores/index'
-
-const store = useDefaultStore()
-
-onMounted(() => {
-  store.loadData()
-})
-
-</script>
 
 <template>
   <main>

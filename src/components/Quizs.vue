@@ -22,10 +22,10 @@ function chargeDonnees() {
 
   isLoading.value = true
 
-  Axios().get('clients?nom='+client.value)
+  /*Axios().get('clients?nom='+client.value)
       .then(response => clients.value = response.data['hydra:member'])
       .then(isLoading.value = false)
-
+*/
 
 }
 
@@ -58,7 +58,4 @@ function chargeDonnees() {
 </template>
 
 <style>
-td{
-  padding: 1rem;
-}
 </style>

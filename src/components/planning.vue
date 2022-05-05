@@ -1,15 +1,32 @@
 <script setup>
 import Axios from '../api/axios'
-import { ref } from 'vue'
-import { useDefaultStore } from '../stores/index'
+import { ref, watch } from 'vue'
+import { onMounted } from 'vue'
 
-const store = useDefaultStore()
-Axios()
+const dates = defineProps({
+        dates: {
+        type: Object,
+        required : true
+        }
+    }
+)
 
 const retour = ref([])
 
-    Axios().get('/planning?dateArrivee=' + store.dates.dateArrivee  + '&dateDepart=' + store.dates.dateDepart )
+onMounted(() => {
+    requete();
+})
+
+watch(dates,(datesNew,datesOld) => {
+        requete();
+    }
+)
+
+function requete(){
+    Axios().get('/planning?dateArrivee=' + dates.dates.dateArrivee  + '&dateDepart=' + dates.dates.dateDepart )
         .then(response => retour.value = response.data)  
+}
+
 
 function couleurCategorie(categorie){
     
@@ -38,19 +55,20 @@ fieldset{
   flex-direction: column;
 }
 
-div{
-  display: flex;
-  flex-direction: row;
-}
-
 .date{
-    border: 2px grey;
-    border-collapse: collapse;
+    border: 1px solid black;
     color: white;
+    margin: 0;
+    padding: 1rem;
+    text-align: center;
+    flex-grow: 1;
 }
 
 .planning{
-    border: 2px grey;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .red{
@@ -66,7 +84,7 @@ div{
 }
 
 .green{
-    background-color: green;
+    background-color: rgb(78, 209, 21);
 }
 
 </style>

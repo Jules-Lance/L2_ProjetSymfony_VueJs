@@ -2,15 +2,17 @@
 import Axios from '../api/axios'
 import { ref } from 'vue'
 import planning from './planning.vue'
-import { useDefaultStore } from '../stores/index'
+import moment from 'moment'
 
-const store = useDefaultStore()
 Axios()
 
 const nombrePlace = ref(1)
-const dateArrivee = ref('')
-const dateDepart = ref('')
+const dateArrivee = ref(moment().add(1, 'days').format("yyyy-MM-DD"))
+const dateDepart = ref(moment().add(8, 'days').format("yyyy-MM-DD"))
 const retour = ref([])
+const dates = ref({})
+
+chargeDonnees()
 
 function chargeDonnees() {
 
@@ -18,14 +20,13 @@ function chargeDonnees() {
 
   Axios().get('/pre_reservation?dateArrivee=' + dateArrivee.value + '&dateDepart=' + dateDepart.value + '&nombrePlace=' + nombrePlace.value)
       .then(response => retour.value = response.data)
-      .then(store.dates = {'dateArrivee': dateArrivee,'dateDepart': dateDepart})
 
+  dates.value = {'dateArrivee': dateArrivee,'dateDepart': dateDepart}
 }
 
 </script>
 
 <template>
-
 
   <div>
     <form>
@@ -40,7 +41,7 @@ function chargeDonnees() {
       <h2 v-if="retour.prix">Prix : {{ retour.prix}}</h2>
     </form>
     <div v-if="retour.prix">
-      <planning/>
+      <planning v-bind:dates="dates"/>
     </div>
   </div>
 

@@ -1,8 +1,11 @@
 <script setup>
 import Axios from '../api/axios'
-import { ref, watch } from 'vue'
-import { onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
+import { useDefaultStore } from '../stores/index'
+import moment from 'moment'
 
+
+const store = useDefaultStore()
 const dates = defineProps({
         dates: {
         type: Object,
@@ -10,7 +13,6 @@ const dates = defineProps({
         }
     }
 )
-
 const retour = ref([])
 
 onMounted(() => {
@@ -22,11 +24,15 @@ watch(dates,(datesNew,datesOld) => {
     }
 )
 
-function requete(){
-    Axios().get('/planning?dateArrivee=' + dates.dates.dateArrivee  + '&dateDepart=' + dates.dates.dateDepart )
-        .then(response => retour.value = response.data)  
+function jour(date){
+    return moment(date).format("dddd")
 }
 
+
+function requete(){
+    Axios().get( store.urlSymfony + '/planning?dateArrivee=' + dates.dates.dateArrivee  + '&dateDepart=' + dates.dates.dateDepart )
+        .then(response => retour.value = response.data)  
+}
 
 function couleurCategorie(categorie){
     
@@ -43,7 +49,7 @@ function couleurCategorie(categorie){
 <template>
 
     <div class="planning">
-        <h3 v-for="(date,index) in retour" :key="index" class="date" v-bind:class="couleurCategorie(date.categorie)" > {{ date.date }}</h3>
+        <h3 v-for="(date,index) in retour" :key="index" class="date" v-bind:class="couleurCategorie(date.categorie)" >{{ jour(date.date)}} {{ date.date }}</h3>
     </div>
 
 </template>
@@ -61,13 +67,14 @@ fieldset{
     margin: 0;
     padding: 1rem;
     text-align: center;
-    flex-grow: 1;
+    width:13%;
+    
 }
 
 .planning{
-    border: 1px solid black;
     display: flex;
     flex-direction: row;
+    justify-content: space-evenly;
     flex-wrap: wrap;
 }
 

@@ -1,24 +1,27 @@
 <script setup>
 import Axios from '../api/axios'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import planning from './planning.vue'
 import moment from 'moment'
+import { useDefaultStore } from '../stores/index'
 
-Axios()
 
+const store = useDefaultStore()
 const nombrePlace = ref(1)
 const dateArrivee = ref(moment().add(1, 'days').format("yyyy-MM-DD"))
-const dateDepart = ref(moment().add(8, 'days').format("yyyy-MM-DD"))
+const dateDepart = ref(moment().add(14, 'days').format("yyyy-MM-DD"))
 const retour = ref([])
 const dates = ref({})
 
-chargeDonnees()
+onMounted(() => {
+    chargeDonnees()
+})
 
 function chargeDonnees() {
 
   if(dateArrivee.value == '' || dateDepart.value == '') return
 
-  Axios().get('/pre_reservation?dateArrivee=' + dateArrivee.value + '&dateDepart=' + dateDepart.value + '&nombrePlace=' + nombrePlace.value)
+  Axios().get(store.urlSymfony + '/pre_reservation?dateArrivee=' + dateArrivee.value + '&dateDepart=' + dateDepart.value + '&nombrePlace=' + nombrePlace.value)
       .then(response => retour.value = response.data)
 
   dates.value = {'dateArrivee': dateArrivee,'dateDepart': dateDepart}
@@ -40,9 +43,9 @@ function chargeDonnees() {
       </fieldset>
       <h2 v-if="retour.prix">Prix : {{ retour.prix}}</h2>
     </form>
-    <div v-if="retour.prix">
+  </div>
+  <div v-if="retour.prix">
       <planning v-bind:dates="dates"/>
-    </div>
   </div>
 
 </template>
@@ -57,6 +60,7 @@ fieldset{
 div{
   display: flex;
   flex-direction: row;
+  justify-content: space-evenly;
 }
 
 </style>

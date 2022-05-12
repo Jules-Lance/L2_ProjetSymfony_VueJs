@@ -1,6 +1,6 @@
 <script setup>
 import Axios from '../api/axios'
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useDefaultStore } from '../stores/index'
 import moment from 'moment'
 
@@ -14,22 +14,28 @@ const dates = defineProps({
     }
 )
 const retour = ref([])
+const retourMeteo = ref([])
 
 onMounted(() => {
-    requete();
+    requeteSymfony()
+    requeteMeteo()
 })
 
 watch(dates,(datesNew,datesOld) => {
-        requete();
+        requeteSymfony()
     }
 )
 
 function jour(date){
     return moment(date).format("dddd")
 }
+function requeteMeteo(){
 
+   Axios().get(store.urlMeteo)
+        .then(response => retourMeteo.value = response.data)
+}
 
-function requete(){
+function requeteSymfony(){
     Axios().get( store.urlSymfony + '/planning?dateArrivee=' + dates.dates.dateArrivee  + '&dateDepart=' + dates.dates.dateDepart )
         .then(response => retour.value = response.data)  
 }
@@ -43,32 +49,83 @@ function couleurCategorie(categorie){
     return "black"
 }
 
+function meteo(date){
+  
+    const meteo = retourMeteo.value.daily.filter( recherche => {
+        if(moment.unix(recherche.dt).format("yyyy-MM-DD") === date) return true
+    })
+    
+    if(meteo.length > 0){
+        return meteo[0]
+    }
+
+    return null
+    
+}
+
+function lienIcon(date){
+    return 'http://openweathermap.org/img/wn/' + meteo(date).weather[0].icon + '@2x.png'
+}
 
 </script>
 
 <template>
-
-    <div class="planning">
-        <h3 v-for="(date,index) in retour" :key="index" class="date" v-bind:class="couleurCategorie(date.categorie)" >{{ jour(date.date)}} {{ date.date }}</h3>
+    <div class="conteneur">
+        <div class="explication">
+            <h3 class="black">Plein</h3>
+            <h3 class="red">Dernière place</h3>
+            <h3 class="orange">Presque plein</h3>
+            <h3 class="green">Disponible</h3>
+        </div>
+        <div class="planning">
+            <div v-for="(date,index) in retour" :key="index" :class="[couleurCategorie(date.categorie),date]" >
+                <h2>{{ jour(date.date)}}</h2>
+                <h2>{{ date.date }}</h2>
+                <div v-if="meteo(date.date) != null">
+                    <h3>{{ meteo(date.date).weather[0].description}} : {{ meteo(date.date).temp.day}}</h3>
+                    <img class='icon' :src='lienIcon(date.date)'>
+                </div>
+            </div>
+        </div>
     </div>
 
 </template>
 
-<style>
+<style scoped>
 
-fieldset{
-  display: flex;
-  flex-direction: column;
+.conteneur{
+    flex-direction: column;;
 }
 
 .date{
+    flex-direction: column;
     border: 1px solid black;
     color: white;
-    margin: 0;
-    padding: 1rem;
+    padding: 0rem 1rem;
     text-align: center;
-    width:13%;
-    
+    width:15%;
+    justify-content: stretch;
+}
+
+.explication{
+    color:white;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+}
+
+.explication * {
+    margin:0;
+    flex-grow: 1;
+}
+
+
+.date *{
+    margin: 0.6rem;
+}
+
+.icon{
+    width: 50px;
 }
 
 .planning{
@@ -76,6 +133,10 @@ fieldset{
     flex-direction: row;
     justify-content: space-evenly;
     flex-wrap: wrap;
+}
+
+.planning div{
+    flex-grow: 1;
 }
 
 .red{

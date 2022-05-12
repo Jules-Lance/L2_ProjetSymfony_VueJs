@@ -1,14 +1,18 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import QuizsVue from '../components/Quizs.vue'
-import PreReservation from '../components/preReservation.vue'
+import information from '../components/information.vue'
+import home from '../components/home.vue'
 
 const routes = [
-    // À compléter
     {
       path: '/',
       name : 'homepage',
-      component : PreReservation
+      component : home
     },
+    {
+      path: '/information',
+      name : 'information',
+      component : information
+    }
 ]
 
 const router = createRouter({

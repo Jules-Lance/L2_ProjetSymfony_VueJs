@@ -21,7 +21,7 @@ function chargeDonnees() {
 
   if(dateArrivee.value == '' || dateDepart.value == '') return
 
-  Axios().get(store.urlSymfony + '/pre_reservation?dateArrivee=' + dateArrivee.value + '&dateDepart=' + dateDepart.value + '&nombrePlace=' + nombrePlace.value)
+    Axios().get(store.urlSymfony + '/pre_reservation?dateArrivee=' + dateArrivee.value + '&dateDepart=' + dateDepart.value + '&nombrePlace=' + nombrePlace.value)
       .then(response => retour.value = response.data)
 
   dates.value = {'dateArrivee': dateArrivee,'dateDepart': dateDepart}
@@ -34,14 +34,16 @@ function chargeDonnees() {
   <div>
     <form>
       <fieldset>
+        <div>
         <label id="dateArrive">Date d'arrivée</label>
         <input type="date" v-model="dateArrivee" @change="chargeDonnees">
         <label id="dateDepart">Date de départ</label>
         <input type="date" v-model="dateDepart" @change="chargeDonnees">
         <label id="nombrePlace">Nombre de Place</label>
         <input type="number" v-model="nombrePlace" max="10" min="1" @change="chargeDonnees">
+        </div>
       </fieldset>
-      <h2 v-if="retour.prix">Prix : {{ retour.prix}}</h2>
+      <h2 v-if="retour.prix">Prix : {{ retour.prix }}</h2>
     </form>
   </div>
   <div v-if="retour.prix">
@@ -50,11 +52,15 @@ function chargeDonnees() {
 
 </template>
 
-<style>
+<style scoped>
 
 fieldset{
   display: flex;
   flex-direction: column;
+}
+
+fieldset div{
+  padding: 1rem;
 }
 
 div{

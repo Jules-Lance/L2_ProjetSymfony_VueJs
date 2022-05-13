@@ -44,6 +44,8 @@ function chargeDonnees() {
         </div>
       </fieldset>
       <h2 v-if="retour.prix">Prix : {{ retour.prix }}</h2>
+      <h2 v-if="retour.disponible">Disponible</h2>
+      <h2 v-if="!retour.disponible">Indisponible</h2>
     </form>
   </div>
   <div v-if="retour.prix">
